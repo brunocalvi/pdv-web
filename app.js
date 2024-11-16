@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors())
 
-consign()
+consign({ verbose: false })
   .include('config/connection.js')
   .then('./controllers')
   .then('./factores')
@@ -22,3 +22,5 @@ consign()
 app.listen(process.env.PORT, () => {
   console.log('-> Aplicação rodando na porta 3001!');
 });
+
+module.exports = app;
