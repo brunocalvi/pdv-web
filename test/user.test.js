@@ -1,9 +1,11 @@
 const request = require('supertest');
 const app = require('../app');
-const dotenv = require('dotenv');
 
-dotenv.config();
+// Variáveis globais para a bateria
+let token = '';
+let IdUser = '';
 
+// usuário fake para a bateria excluido ao final
 const user = {
   name: `User Teste`,
   username: `teste.teste`,
@@ -12,17 +14,13 @@ const user = {
   record_type: 'O'
 }
 
-// Variáveis globais para a bateria
-let token = '';
-let IdUser = '';
-
 test('Deve cadastrar um usuário novo', async () => {
   return await request(app).post('/api/user/register')
     .send(user)
     .then((res) => {
       expect(res.status).toEqual(201);
       expect(res.body.ID_usuario).not.toBeNull();
-  });
+    });
 });
 
 test('Deve se logar com o usuário cadastrado e salvar o token', async () => {
@@ -37,7 +35,7 @@ test('Deve se logar com o usuário cadastrado e salvar o token', async () => {
       expect(res.status).toEqual(200);
       expect(res.body.token).not.toBeNull();
       expect(res.body.usuario).not.toBeNull();
-  });  
+    });  
 });
 
 test('Deve consultar os dados do usuário cadastrado', async () => {
@@ -46,7 +44,7 @@ test('Deve consultar os dados do usuário cadastrado', async () => {
     .then((res) => {
       expect(res.status).toEqual(200);
       expect(res.body.usuario.id).toEqual(IdUser);
-  }); 
+    }); 
 });
 
 test('Não deve deixar o usuario atualizar o nome com caracterers especiais', async () => {
@@ -55,16 +53,16 @@ test('Não deve deixar o usuario atualizar o nome com caracterers especiais', as
     .send({ name: 'User teste @', username: user.username, email: user.email, record_type: user.record_type })
     .then((res) => {
       expect(res.status).toEqual(400);
-  });  
+    });  
 });
 
 test('Deve atualizar o usuário cadastrado', async () => {
   return await request(app).put(`/api/user/${IdUser}`)
     .set('authorization', `bearer ${token}`)
-    .send({ name: 'User teste 2', username: user.username, email: user.email, record_type: user.record_type })
+    .send({ name: 'User teste Alterado', username: user.username, email: user.email, record_type: user.record_type })
     .then((res) => {
       expect(res.status).toEqual(200);
-  });
+    });
 });
 
 describe('Ao pedir para alterar a senha ...', () => {
@@ -76,7 +74,7 @@ describe('Ao pedir para alterar a senha ...', () => {
       .then((res) => {
         expect(res.status).toEqual(400);
         expect(res.body.erro[0]).toEqual(['Senha deve ter no mínimo 8 caracteres.']);
-    });  
+      });  
   });
 
   test('Deve pedir para ter letras minusculas', async () => {
@@ -86,7 +84,7 @@ describe('Ao pedir para alterar a senha ...', () => {
       .then((res) => {
         expect(res.status).toEqual(400);
         expect(res.body.erro[0]).toEqual(['Senha deve conter letras minusculas.']);
-    });  
+      });  
   });
 
   test('Deve pedir para ter letras maiúsculas', async () => {
@@ -96,7 +94,7 @@ describe('Ao pedir para alterar a senha ...', () => {
       .then((res) => {
         expect(res.status).toEqual(400);
         expect(res.body.erro[0]).toEqual(['Senha deve conter letras maiúsculas.']);
-    });  
+      });  
   });
 
   test('Deve pedir para ter números na senha', async () => {
@@ -106,7 +104,7 @@ describe('Ao pedir para alterar a senha ...', () => {
       .then((res) => {
         expect(res.status).toEqual(400);
         expect(res.body.erro[0]).toEqual(['Senha deve conter números.']);
-    });  
+      });  
   });
 
   test('Deve pedir para ter caracteres especiais.', async () => {
@@ -116,7 +114,7 @@ describe('Ao pedir para alterar a senha ...', () => {
       .then((res) => {
         expect(res.status).toEqual(400);
         expect(res.body.erro[0]).toEqual(['Senha deve conter caracteres especiais.']);
-    });  
+      });  
   });
 
 });
@@ -127,5 +125,5 @@ test('Deve excluir o usuário ao final dos testes', async () => {
     .then((res) => {
       expect(res.status).toEqual(200);
       expect(res.body.mensagem).toEqual('Usuário deletado com sucesso!');
-  });
+    });
 });

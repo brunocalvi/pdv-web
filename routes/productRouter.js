@@ -1,7 +1,7 @@
 const validaToken = require('../middlewares/TokenAuth');
 
 module.exports = (app) => {
-  app.post('/api/product/register', async (req, res) => {
+  app.post('/api/product/register', validaToken, async (req, res) => {
     const product = req.body;
     const { name, price, stock } = product;
 
@@ -90,7 +90,6 @@ module.exports = (app) => {
         mensagem: `Estoque atualiado com sucesso.`,
       });
 
-
     } else {
       res.status(400).json({
         status: 400,
@@ -99,9 +98,6 @@ module.exports = (app) => {
         erro: err
       });
     }
-
-
-
   });
 
   return app;

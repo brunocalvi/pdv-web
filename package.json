@@ -4,7 +4,7 @@
   "description": "Ponto de vendas WEB",
   "main": "app.js",
   "scripts": {
-    "test": "jest --forceExit"
+    "test": "jest --watch --verbose=true --runInBand --forceExit"
   },
   "author": "CalviTech",
   "license": "ISC",
@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "jest": "^29.7.0",
+    "portfinder": "^1.0.32",
     "supertest": "^7.0.0"
   }
 }

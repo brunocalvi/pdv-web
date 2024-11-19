@@ -20,7 +20,7 @@ consign({ verbose: false })
   .into(app);
 
 app.listen(process.env.PORT, () => {
-  console.log('-> Aplicação rodando na porta 3001!');
+  console.log(`-> Aplicação rodando na porta ${process.env.PORT}!`);
 });
 
 module.exports = app;
