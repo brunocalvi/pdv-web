@@ -8,7 +8,7 @@ let IdUser = '';
 
 // produto fake para a bateria
 const productFake = {
-  name: `Produto ${Date.now()} `, 
+  name: `Produto ${Date.now()}`, 
   price: 99.99, 
   stock: 10
 }
@@ -65,6 +65,53 @@ test('Deve carregar a lista de produtos cadastrado', async () => {
       expect(res.status).toEqual(200);
       expect(res.body.produtos).not.toBeNull();
     });
+});
+
+test('Deve carregar o produto cadastrado', async () => {
+  return await request(app).get(`/api/product/${IdProduct}`)
+    .set('authorization', `bearer ${token}`)
+    .then((res) => {
+      expect(res.status).toEqual(200);
+      expect(res.body.produto._id).toEqual(IdProduct);
+    });
+});
+
+describe('Ao alterar o produto cadastrado ...', () => {
+  test('Deve aceitar somente valores validos', async () => {
+    let prod = { name: productFake.name, price: 'aa.99', stock: productFake.stock };
+
+    return await request(app).put(`/api/product/${IdProduct}`)
+      .set('authorization', `bearer ${token}`)
+      .send(prod)
+      .then((res) => {
+        expect(res.status).toEqual(400);
+        expect(res.body.erro[0]).toEqual('Insira um valor valido no preço.');
+      })
+  });
+
+  test('Deve aceitar somente quantidade inteiras no estoque', async () => {
+    let prod = { name: productFake.name, price: productFake.price, stock: 'a.10' };
+
+    return await request(app).put(`/api/product/${IdProduct}`)
+      .set('authorization', `bearer ${token}`)
+      .send(prod)
+      .then((res) => {
+        expect(res.status).toEqual(400);
+        expect(res.body.erro[0]).toEqual('Insira um valor valido na quantidade do estoque.');
+      })
+  });
+
+  test('Deve atualizar o produto com sucesso', async () => {
+    let prod = { name: 'Produto atualizado', price: productFake.price, stock: 1 };
+
+    return await request(app).put(`/api/product/${IdProduct}`)
+      .set('authorization', `bearer ${token}`)
+      .send(prod)
+      .then((res) => {
+        expect(res.status).toEqual(200);
+        expect(res.body.mensagem).toEqual('Estoque atualiado com sucesso.');
+      })
+  });
 });
 
 test('Deve excluir o usuário cadastrado para a bateria ao final dos testes', async () => {
